@@ -1,24 +1,22 @@
-import "./lib/dayjs"
+import "./lib/dayjs";
 
 //css
-import "./styles/global.css"
+import "./styles/global.css";
 
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 //components
-import Header from "./components/Header"
-import Summary from "./components/Summary"
-
-
+import { Home } from "./pages/Home";
+import { Register } from "./pages/Register";
 
 export function App() {
-
   return (
     <div className="w-screen h-screen flex justify-center items-center">
-      <div className="w-full max-w-5xl px-6 flex flex-col gap-16">
-        <Header/>
-        <Summary/>
-      </div>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/register" element={<Register />} />
+        </Routes>
+      </BrowserRouter>
     </div>
-  )
+  );
 }
-
-
