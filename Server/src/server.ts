@@ -1,7 +1,7 @@
 import fastify from "fastify";
 import cors from "@fastify/cors";
 import { habitsRoutes } from "./routes/habits";
-import { authRoutes } from "./routes/Auth";
+import { authRoutes } from "./routes/auth";
 
 const app = fastify();
 
