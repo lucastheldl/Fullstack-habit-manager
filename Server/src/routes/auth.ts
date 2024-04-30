@@ -21,13 +21,14 @@ export async function authRoutes(app: FastifyInstance) {
           },
         });
         if (!user) {
-          await prisma.user.create({
+          const createdUser = await prisma.user.create({
             data: {
               email,
               password,
               username,
             },
           });
+          console.log(createdUser.id);
         }
       } catch (error) {
         throw error;

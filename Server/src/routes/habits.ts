@@ -4,12 +4,16 @@ import { z } from "zod";
 import { prisma } from "../lib/prisma";
 
 export async function habitsRoutes(app: FastifyInstance) {
-  app.post("/habits", async (request) => {
+  app.post("/:id/habits", async (request) => {
     const createHabitBody = z.object({
       title: z.string(),
       weekDays: z.array(z.number().min(0).max(6)),
     });
+    const requestParamsValidation = z.object({
+      id: z.string(),
+    });
     const { title, weekDays } = createHabitBody.parse(request.body);
+    const { id } = requestParamsValidation.parse(request.params);
 
     const today = dayjs().startOf("day").toDate();
 
@@ -17,6 +21,7 @@ export async function habitsRoutes(app: FastifyInstance) {
       data: {
         title,
         created_at: today,
+        user_id: id,
         WeekDays: {
           create: weekDays.map((weekDay) => {
             return {
@@ -75,12 +80,13 @@ export async function habitsRoutes(app: FastifyInstance) {
     };
   });
   //completas e nao completar um habito
-  app.patch("/habits/:id/toggle", async (request) => {
+  app.patch("/:userId/habits/:id/toggle", async (request) => {
     const toggleHabitParams = z.object({
       id: z.string().uuid(),
+      userId: z.string().uuid(),
     });
 
-    const { id } = toggleHabitParams.parse(request.params);
+    const { id, userId } = toggleHabitParams.parse(request.params);
 
     const today = dayjs().startOf("day").toDate();
 
@@ -93,6 +99,7 @@ export async function habitsRoutes(app: FastifyInstance) {
       day = await prisma.day.create({
         data: {
           date: today,
+          user_id: userId,
         },
       });
     }
