@@ -1,10 +1,9 @@
 import { FastifyInstance } from "fastify";
 import dayjs from "dayjs";
 import { z } from "zod";
-import { string } from "zod/lib";
-import { prisma } from "./lib/prisma";
+import { prisma } from "../lib/prisma";
 
-export async function appRoutes(app: FastifyInstance) {
+export async function habitsRoutes(app: FastifyInstance) {
   app.post("/habits", async (request) => {
     const createHabitBody = z.object({
       title: z.string(),
