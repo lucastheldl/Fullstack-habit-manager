@@ -7,13 +7,20 @@ import logoImg from "../assets/logo.svg";
 //components
 import * as Dialog from "@radix-ui/react-dialog";
 import NewHabitForm from "./NewHabitForm";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 
 type Props = {};
 
 const Header = (props: Props) => {
+  const navigate = useNavigate();
   const isAuthenticated = Cookies.get("jwt");
+
+  function handleLogOut() {
+    Cookies.remove("jwt");
+
+    navigate("/register");
+  }
 
   return (
     <div className="w-full max-w-3xl mx-auto flex items-center justify-between">
@@ -28,13 +35,21 @@ const Header = (props: Props) => {
             Login / Regsiter
           </Link>
         ) : (
-          <Dialog.Trigger
-            type="button"
-            className="border border-violet-500 font-semibold rounded-lg px-6 py-4 flex items-center gap-3 hover:border-violet-300 transition-colors focus:outline-none focus:ring-2 focus:ring-violet-700 focus:ring-offset-2 focus:ring-offset-background"
-          >
-            <Plus size={20} className="text-violet-500" />
-            Novo hábito
-          </Dialog.Trigger>
+          <>
+            <button
+              onClick={handleLogOut}
+              className="border border-violet-500 font-semibold rounded-lg px-6 py-4 flex items-center gap-3 hover:border-violet-300 transition-colors focus:outline-none focus:ring-2 focus:ring-violet-700 focus:ring-offset-2 focus:ring-offset-background cursor-pointer"
+            >
+              Log out
+            </button>
+            <Dialog.Trigger
+              type="button"
+              className="border border-violet-500 font-semibold rounded-lg px-6 py-4 flex items-center gap-3 hover:border-violet-300 transition-colors focus:outline-none focus:ring-2 focus:ring-violet-700 focus:ring-offset-2 focus:ring-offset-background"
+            >
+              <Plus size={20} className="text-violet-500" />
+              Novo hábito
+            </Dialog.Trigger>
+          </>
         )}
         <Dialog.Portal>
           <Dialog.Overlay className="w-screen h-screen bg-black/80 fixed inset-0" />

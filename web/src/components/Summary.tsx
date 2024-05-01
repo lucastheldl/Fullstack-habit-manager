@@ -5,7 +5,7 @@ import { generateDatesFromYearBegnning } from "../utils/generate-dates-from-year
 //components
 import HabitDay from "./HabitDay";
 import Cookies from "js-cookie";
-import jwt_decode, { jwtDecode } from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 
 type Props = {};
 
@@ -23,8 +23,9 @@ type SummaryTable = Array<{
 }>;
 const Summary = (props: Props) => {
   const [summary, setSummary] = useState<SummaryTable>([]);
-  const [userId, setUserId] = useState<string | undefined>(undefined);
   const [username, setUsername] = useState("");
+
+  let userId = "";
 
   const isAuthenticated = Cookies.get("jwt");
   useEffect(() => {
@@ -36,7 +37,7 @@ const Summary = (props: Props) => {
       };
       // Extract user ID and username from the decoded token
       const { sub: user_Id, name: username } = decodedToken;
-      setUserId(user_Id);
+      userId = user_Id;
       console.log(user_Id);
       setUsername(username);
     }
@@ -50,7 +51,7 @@ const Summary = (props: Props) => {
       .then((response) => {
         setSummary(response.data);
       });
-  }, [userId]);
+  }, [isAuthenticated]);
 
   return (
     <div className="w-full flex ">
