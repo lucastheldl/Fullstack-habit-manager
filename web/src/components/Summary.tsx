@@ -4,6 +4,8 @@ import { api } from "../lib/axios";
 import { generateDatesFromYearBegnning } from "../utils/generate-dates-from-year-begnning";
 //components
 import HabitDay from "./HabitDay";
+import Cookies from "js-cookie";
+import jwt_decode, { jwtDecode } from "jwt-decode";
 
 type Props = {};
 
@@ -21,12 +23,34 @@ type SummaryTable = Array<{
 }>;
 const Summary = (props: Props) => {
   const [summary, setSummary] = useState<SummaryTable>([]);
+  const [userId, setUserId] = useState<string | undefined>(undefined);
+  const [username, setUsername] = useState("");
 
+  const isAuthenticated = Cookies.get("jwt");
   useEffect(() => {
-    api.get("summary").then((response) => {
-      setSummary(response.data);
-    });
-  }, []);
+    if (isAuthenticated) {
+      // Decode the JWT token
+      const decodedToken = jwtDecode(isAuthenticated) as {
+        sub: string;
+        name: string;
+      };
+      // Extract user ID and username from the decoded token
+      const { sub: user_Id, name: username } = decodedToken;
+      setUserId(user_Id);
+      console.log(user_Id);
+      setUsername(username);
+    }
+
+    api
+      .get(`/${userId}/summary`, {
+        headers: {
+          Authorization: `Bearer ${isAuthenticated}`,
+        },
+      })
+      .then((response) => {
+        setSummary(response.data);
+      });
+  }, [userId]);
 
   return (
     <div className="w-full flex ">

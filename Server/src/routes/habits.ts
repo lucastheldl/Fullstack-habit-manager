@@ -1,9 +1,12 @@
-import { FastifyInstance } from "fastify";
+import { FastifyInstance, FastifyRequest } from "fastify";
 import dayjs from "dayjs";
 import { z } from "zod";
 import { prisma } from "../lib/prisma";
 
 export async function habitsRoutes(app: FastifyInstance) {
+  app.addHook("preHandler", async (request: FastifyRequest) => {
+    await request.jwtVerify();
+  });
   app.post("/:id/habits", async (request) => {
     const createHabitBody = z.object({
       title: z.string(),
@@ -130,8 +133,10 @@ export async function habitsRoutes(app: FastifyInstance) {
       });
     }
   });
-  app.get("/summary", async () => {
+  app.get("/:id/summary", async (request) => {
+    const { id } = request.params;
     const summary = await prisma.$queryRaw`
+
 
     SELECT
      D.id,
@@ -152,7 +157,11 @@ export async function habitsRoutes(app: FastifyInstance) {
           HWD.week_day = cast(strftime('%w',D.date/1000.0,'unixepoch') as int)
           AND H.created_at <= D.date
      )as amount
-    FROM days D
+    FROM days D 
+    JOIN 
+    users U ON D.user_id = U.id
+    WHERE 
+    U.id = ${id};
     `;
     return summary;
   });

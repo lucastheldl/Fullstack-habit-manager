@@ -17,31 +17,38 @@ export async function authRoutes(app: FastifyInstance) {
       const today = dayjs().startOf("day").toDate();
 
       try {
-        const user = await prisma.user.findUnique({
+        let user = await prisma.user.findUnique({
           where: {
             email: email,
           },
         });
         if (!user) {
-          const createdUser = await prisma.user.create({
+          user = await prisma.user.create({
             data: {
               email,
               password,
               username,
             },
           });
-          const day = await prisma.day.create({
+          //Create a new day on the db as the user first day
+          await prisma.day.create({
             data: {
               date: today,
-              user_id: createdUser.id,
+              user_id: user.id,
             },
           });
-          console.log(createdUser.id);
+          console.log(user.id);
         }
+        //sign token
+        const token = await reply.jwtSign(
+          { name: user.username },
+          { sign: { sub: user.id, expiresIn: "30 days" } }
+        );
+        return reply.status(200).send({ token });
       } catch (error) {
+        console.log(error);
         throw error;
       }
-      return reply.status(200).send();
     }
   );
 
