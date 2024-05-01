@@ -1,6 +1,7 @@
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
 import { prisma } from "../lib/prisma";
+import dayjs from "dayjs";
 
 export async function authRoutes(app: FastifyInstance) {
   app.post(
@@ -13,6 +14,7 @@ export async function authRoutes(app: FastifyInstance) {
       });
 
       const { email, password, username } = bodySchema.parse(request.body);
+      const today = dayjs().startOf("day").toDate();
 
       try {
         const user = await prisma.user.findUnique({
@@ -26,6 +28,12 @@ export async function authRoutes(app: FastifyInstance) {
               email,
               password,
               username,
+            },
+          });
+          const day = await prisma.day.create({
+            data: {
+              date: today,
+              user_id: createdUser.id,
             },
           });
           console.log(createdUser.id);
