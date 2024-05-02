@@ -35,13 +35,17 @@ export async function habitsRoutes(app: FastifyInstance) {
       },
     });
   });
-  app.get("/day", async (request) => {
+  app.get("/:id/day", async (request) => {
     const getDayParams = z.object({
       date: z.coerce.date(),
+    });
+    const getRequestParams = z.object({
+      id: z.string(),
     });
 
     //pega o dia enviado pela request
     const { date } = getDayParams.parse(request.query);
+    const { id } = getRequestParams.parse(request.params);
 
     const parsedDate = dayjs(date).startOf("day");
     const weekDay = parsedDate.get("day");
@@ -65,7 +69,10 @@ export async function habitsRoutes(app: FastifyInstance) {
     //encontra os dias em que alguns habito estiver completo baseado na data enviada
     const day = await prisma.day.findUnique({
       where: {
-        date: parsedDate.toDate(),
+        date_user_id: {
+          date: parsedDate.toDate(),
+          user_id: id,
+        },
       },
       include: {
         dayHabits: true,
@@ -95,7 +102,10 @@ export async function habitsRoutes(app: FastifyInstance) {
 
     let day = await prisma.day.findUnique({
       where: {
-        date: today,
+        date_user_id: {
+          date: today,
+          user_id: userId,
+        },
       },
     });
     if (!day) {
@@ -134,7 +144,12 @@ export async function habitsRoutes(app: FastifyInstance) {
     }
   });
   app.get("/:id/summary", async (request) => {
-    const { id } = request.params;
+    const getRequestParams = z.object({
+      id: z.string(),
+    });
+
+    const { id } = getRequestParams.parse(request.params);
+
     const summary = await prisma.$queryRaw`
 
 

@@ -40,17 +40,17 @@ const Summary = (props: Props) => {
       userId = user_Id;
       console.log(user_Id);
       setUsername(username);
-    }
 
-    api
-      .get(`/${userId}/summary`, {
-        headers: {
-          Authorization: `Bearer ${isAuthenticated}`,
-        },
-      })
-      .then((response) => {
-        setSummary(response.data);
-      });
+      api
+        .get(`/${userId}/summary`, {
+          headers: {
+            Authorization: `Bearer ${isAuthenticated}`,
+          },
+        })
+        .then((response) => {
+          setSummary(response.data);
+        });
+    }
   }, [isAuthenticated]);
 
   return (

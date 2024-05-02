@@ -69,6 +69,9 @@ export async function authRoutes(app: FastifyInstance) {
       if (!user) {
         return reply.status(404).send();
       }
+      if (user.password != password) {
+        return reply.status(500).send();
+      }
       //Fazer o JWT
       const token = await reply.jwtSign(
         { name: user.username },

@@ -3,6 +3,8 @@ import * as Checkbox from "@radix-ui/react-checkbox";
 import { Check } from "phosphor-react";
 import { api } from "../lib/axios";
 import dayjs from "dayjs";
+import Cookies from "js-cookie";
+import { jwtDecode } from "jwt-decode";
 
 type Props = {
   date: Date;
@@ -19,6 +21,9 @@ interface HabitsInfo {
 
 const HabitsList = (props: Props) => {
   const [habitsInfo, setHabitsInfo] = useState<HabitsInfo>();
+
+  const isAuthenticated = Cookies.get("jwt");
+  let userId = "";
 
   async function handleToggleHabit(habitId: string) {
     await api.patch(`/habits/${habitId}/toggle`);
@@ -42,16 +47,29 @@ const HabitsList = (props: Props) => {
   }
 
   useEffect(() => {
-    api
-      .get("/day", {
-        params: {
-          date: props.date.toISOString(),
-        },
-      })
-      .then((response) => {
-        setHabitsInfo(response.data);
-      });
-    console.log(props.date.toISOString());
+    if (isAuthenticated) {
+      // Decode the JWT token
+      const decodedToken = jwtDecode(isAuthenticated) as {
+        sub: string;
+        name: string;
+      };
+      // Extract user ID and username from the decoded token
+      const { sub: user_Id, name: username } = decodedToken;
+      userId = user_Id;
+      api
+        .get(`/${userId}/day`, {
+          params: {
+            date: props.date.toISOString(),
+          },
+          headers: {
+            Authorization: `Bearer ${isAuthenticated}`,
+          },
+        })
+        .then((response) => {
+          setHabitsInfo(response.data);
+        });
+      console.log(props.date.toISOString());
+    }
   }, []);
 
   const isDateInPast = dayjs(props.date).endOf("day").isBefore(new Date());
