@@ -57,6 +57,7 @@ export async function habitsRoutes(app: FastifyInstance) {
         user_id: id,
         created_at: {
           //tem que ter sido criado antes da data
+          //lte: less than or equal than
           lte: date,
         },
         //estar relacionado com esse dia especifico
