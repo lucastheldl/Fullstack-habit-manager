@@ -1,6 +1,6 @@
 import { FormEvent, useState } from "react";
 import { api } from "../lib/axios";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 
 export function Login() {
@@ -23,7 +23,6 @@ export function Login() {
             expires: 7,
             path: "/",
           });
-          console.log(response);
         });
 
       navigate("/");
@@ -33,8 +32,13 @@ export function Login() {
   }
   return (
     <div>
+      <h1 className="font-semibold text-[2rem] text-center text-violet-500 mb-6">
+        Fazer login
+      </h1>
       <form onSubmit={handleSubmit} className="flex flex-col">
-        <label htmlFor="email">Email:</label>
+        <label htmlFor="email" className="mb-2 mt-2 font-semibold">
+          Email:
+        </label>
         <input
           type="email"
           name="email"
@@ -42,9 +46,11 @@ export function Login() {
           onChange={(e) => setEmail(e.target.value)}
           placeholder="Digite seu email"
           required
-          className="text-slate-900"
+          className="text-zinc-400 border border-violet-500 bg-zinc-800 font-semibold rounded-lg px-4 py-2 hover:border-violet-300 transition-colors focus:outline-none focus:ring-2 focus:ring-violet-700 focus:ring-offset-2 focus:ring-offset-background"
         />
-        <label htmlFor="password">Senha:</label>
+        <label htmlFor="password" className="mb-2 mt-2 font-semibold">
+          Senha:
+        </label>
         <input
           type="password"
           name="password"
@@ -52,10 +58,22 @@ export function Login() {
           onChange={(e) => setPassword(e.target.value)}
           placeholder="Crie uma senha"
           required
-          className="text-slate-900"
+          className="text-zinc-400 border border-violet-500 bg-zinc-800 font-semibold rounded-lg px-4 py-2 hover:border-violet-300 transition-colors focus:outline-none focus:ring-2 focus:ring-violet-700 focus:ring-offset-2 focus:ring-offset-background"
         />
 
-        <input type="submit" />
+        <input
+          type="submit"
+          className="border border-violet-500 font-semibold rounded-lg px-6 py-4 mt-5 flex items-center justify-center gap-3 hover:border-violet-300 transition-colors focus:outline-none focus:ring-2 focus:ring-violet-700 focus:ring-offset-2 focus:ring-offset-background cursor-pointer"
+        />
+        <div className="flex mt-2 gap-1 justify-center">
+          <p>Ainda não tem uma conta?</p>
+          <Link
+            to={"/register"}
+            className="text-violet-500 cursor-pointer hover:text-violet-300"
+          >
+            Registrar
+          </Link>
+        </div>
       </form>
     </div>
   );
