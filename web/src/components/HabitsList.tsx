@@ -21,12 +21,20 @@ interface HabitsInfo {
 
 const HabitsList = (props: Props) => {
   const [habitsInfo, setHabitsInfo] = useState<HabitsInfo>();
+  const [userId, setUserId] = useState("");
 
   const isAuthenticated = Cookies.get("jwt");
-  let userId = "";
 
   async function handleToggleHabit(habitId: string) {
-    await api.patch(`/habits/${habitId}/toggle`);
+    await api.patch(
+      `/${userId}/habits/${habitId}/toggle`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${isAuthenticated}`,
+        },
+      }
+    );
     const isHabitAlreadyCompleted =
       habitsInfo!.completedHabits.includes(habitId);
 
@@ -55,9 +63,9 @@ const HabitsList = (props: Props) => {
       };
       // Extract user ID and username from the decoded token
       const { sub: user_Id, name: username } = decodedToken;
-      userId = user_Id;
+      setUserId(user_Id);
       api
-        .get(`/${userId}/day`, {
+        .get(`/${user_Id}/day`, {
           params: {
             date: props.date.toISOString(),
           },
