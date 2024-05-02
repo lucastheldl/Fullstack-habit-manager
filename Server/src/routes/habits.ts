@@ -54,6 +54,7 @@ export async function habitsRoutes(app: FastifyInstance) {
     //pega todos os habitos que foram criados ate certa data e que possam ser feitos em alguns dias da semana
     const possibleHabits = await prisma.habit.findMany({
       where: {
+        user_id: id,
         created_at: {
           //tem que ter sido criado antes da data
           lte: date,
