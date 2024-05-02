@@ -70,9 +70,13 @@ export async function authRoutes(app: FastifyInstance) {
         return reply.status(404).send();
       }
       //Fazer o JWT
+      const token = await reply.jwtSign(
+        { name: user.username },
+        { sign: { sub: user.id, expiresIn: "30 days" } }
+      );
+      return reply.status(200).send({ token });
     } catch (error) {
       throw error;
     }
-    return reply.status(200).send();
   });
 }
