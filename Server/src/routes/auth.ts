@@ -2,6 +2,7 @@ import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
 import { prisma } from "../lib/prisma";
 import dayjs from "dayjs";
+import { compare, hash } from "bcryptjs";
 
 export async function authRoutes(app: FastifyInstance) {
   app.post(
@@ -23,10 +24,12 @@ export async function authRoutes(app: FastifyInstance) {
           },
         });
         if (!user) {
+          const password_hash = await hash(password, 5);
+
           user = await prisma.user.create({
             data: {
               email,
-              password,
+              password: password_hash,
               username,
             },
           });
@@ -69,7 +72,8 @@ export async function authRoutes(app: FastifyInstance) {
       if (!user) {
         return reply.status(404).send();
       }
-      if (user.password != password) {
+      const doesPasswordMatches = await compare(password, user.password);
+      if (!doesPasswordMatches) {
         return reply.status(500).send();
       }
       //Fazer o JWT
